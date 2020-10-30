@@ -528,6 +528,22 @@ noise<-function(name, variance=.01, fixed=FALSE){
 
 #' Title
 #'
+#' @param name 
+#' @param weights 
+#' @param variance 
+#' @param fixed 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+weightednoise<-function(name, weights, variance=.01, fixed=FALSE){
+  jrslt<-.jcall("jdplus/msts/AtomicModels", "Ljdplus/msts/StateItem;", "weightedNoise", name, as.double(weights), variance, fixed)
+  new (Class = "JD3_SsfStateBlock", internal = jrslt)
+}
+
+#' Title
+#'
 #' @return
 #' @export
 #'
@@ -562,47 +578,28 @@ equation<-function(name, variance=0, fixed=T){
 #'
 #' @examples
 loading<-function(pos=NULL, weights=NULL){
-  
-  
-  if (is.null(pos)){	jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "fromPosition", as.integer(0))
-  
-  
-  return (new (Class = "JD3_SsfLoading", internal =jrslt))
+  if (is.null(pos)){	
+    jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "fromPosition", as.integer(0))
+    return (new (Class = "JD3_SsfLoading", internal =jrslt))
   }
-  else if (length(pos) == 1){ if (is.null(weights))
-    
-    
-    jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "fromPosition", as.integer(pos))
-  else{
-    
-    
-    if (length(pos) != length(weights))
-      
-      
-      return (NULL)
-    
-    
-    jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "from", as.integer(pos), weights[1])
-  }
-  
-  
-  return (new (Class = "JD3_SsfLoading", internal =jrslt))
+  else if (length(pos) == 1){ 
+    if (is.null(weights)){
+      jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "fromPosition", as.integer(pos))
+    }else{
+      if (length(pos) != length(weights)){
+        return (NULL)
+      }
+      jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "from", as.integer(pos), weights[1])
+    }
+    return (new (Class = "JD3_SsfLoading", internal =jrslt))
   }else{
-    
-    
     if (is.null(weights))
       jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "fromPositions", as.integer(pos))
     else{
-      
-      
       if (length(pos) != length(weights))
         return (NULL)
-      
-      
       jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "from", as.integer(pos), weights)
     }
-    
-    
     return (new (Class = "JD3_SsfLoading", internal =jrslt))
   }
 }
@@ -625,7 +622,7 @@ varloading<-function(pos, weights){
   }else{
     jl<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "fromPositions", as.integer(pos))
   }
-  jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "rescale", jl, weights)
+  jrslt<-.jcall("jdplus/ssf/implementations/Loading", "Ljdplus/ssf/ISsfLoading;", "rescale", jl, as.numeric(weights))
   return (new (Class = "JD3_SsfLoading", internal =jrslt))
 }
 
